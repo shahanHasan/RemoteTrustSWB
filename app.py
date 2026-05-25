@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import asyncio
 import base64
 import html
 import math
@@ -13,7 +14,7 @@ import tempfile
 import textwrap
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import gradio as gr
 import pandas as pd
@@ -24,6 +25,27 @@ ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
+
+
+def _suppress_asyncio_fd_teardown_warning() -> None:
+    """Suppress noisy asyncio cleanup warning seen on some hosted runtimes."""
+    original_del = getattr(asyncio.BaseEventLoop, "__del__", None)
+    if original_del is None:
+        return
+    if getattr(original_del, "__name__", "") == "_safe_base_event_loop_del":
+        return
+
+    def _safe_base_event_loop_del(self: asyncio.BaseEventLoop) -> None:
+        try:
+            original_del(self)
+        except ValueError as exc:
+            if "Invalid file descriptor" not in str(exc):
+                raise
+
+    asyncio.BaseEventLoop.__del__ = _safe_base_event_loop_del  # type: ignore[assignment]
+
+
+_suppress_asyncio_fd_teardown_warning()
 
 from job_fraud_detector.inference import FraudDetector
 from job_fraud_detector.live_sources import SOURCES, fetch_jobs_from_sources, score_live_jobs
@@ -226,6 +248,12 @@ def _load_detector() -> tuple[FraudDetector | None, str]:
 DETECTOR, DETECTOR_STATUS = _load_detector()
 
 
+def _resolve_local_image_src(path: Path) -> str:
+    """Return a Gradio-served local file URL for files inside the project tree."""
+    relative = path.resolve().relative_to(ROOT.resolve())
+    return f"/gradio_api/file={quote(relative.as_posix())}"
+
+
 def _load_image_data_uri(candidate_paths: list[Path]) -> str:
     mime_by_suffix = {
         ".png": "image/png",
@@ -238,6 +266,11 @@ def _load_image_data_uri(candidate_paths: list[Path]) -> str:
         try:
             if not path.exists() or not path.is_file():
                 continue
+            # Prefer static file paths for project assets to keep HTML payload small.
+            try:
+                return _resolve_local_image_src(path)
+            except ValueError:
+                pass
             suffix = path.suffix.lower()
             mime_type = mime_by_suffix.get(suffix, "image/png")
             encoded = base64.b64encode(path.read_bytes()).decode("ascii")
@@ -245,6 +278,13 @@ def _load_image_data_uri(candidate_paths: list[Path]) -> str:
         except Exception:
             continue
     return ""
+
+
+if hasattr(gr, "set_static_paths"):
+    try:
+        gr.set_static_paths(paths=[ROOT / "assets"])
+    except Exception:
+        pass
 
 
 LOGO_DATA_URI = _load_image_data_uri(LOGO_CANDIDATE_PATHS)
@@ -2502,7 +2542,7 @@ body.dark .gradio-container,
 
 .landing-shell {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background: linear-gradient(
     90deg,
     color-mix(in srgb, var(--rt-panel) 96%, transparent) 0%,
@@ -2511,11 +2551,9 @@ body.dark .gradio-container,
   );
   border: 1px solid var(--rt-border);
   border-radius: 22px;
-  padding: 24px;
-  min-height: calc(100vh - 132px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 20px;
+  min-height: 0;
+  display: block;
   box-shadow: var(--rt-shadow);
 }
 
@@ -3946,6 +3984,7 @@ _launch_kwargs: dict[str, Any] = {}
 if GRADIO_MAJOR_VERSION >= 6:
     _launch_kwargs["css"] = CSS
     _launch_kwargs["theme"] = THEME
+    _launch_kwargs["ssr_mode"] = os.environ.get("GRADIO_SSR_MODE", "0").strip().lower() in {"1", "true", "yes"}
 else:
     _blocks_kwargs["css"] = CSS
     _blocks_kwargs["theme"] = THEME
