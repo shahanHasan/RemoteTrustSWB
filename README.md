@@ -1,3 +1,13 @@
+---
+title: RemoteTrust Job Board
+emoji: 🛡️
+colorFrom: blue
+colorTo: green
+sdk: gradio
+app_file: app.py
+python_version: "3.11"
+---
+
 # EMSCAD Traditional ML Fraud Detector (CPU-Friendly)
 
 Traditional ML benchmark + soft-voting ensemble for fake job detection on EMSCAD, with recall-first thresholding and optional LIME local explanations.
