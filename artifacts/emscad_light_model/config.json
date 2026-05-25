@@ -1,0 +1,42 @@
+{
+  "threshold": 0.424533,
+  "selected_model_name": "linsvc_cal_tfidf",
+  "available_models": [
+    "cnb_bow",
+    "linsvc_cal_tfidf",
+    "logreg_tfidf",
+    "sgd_log_tfidf",
+    "voting_soft"
+  ],
+  "thresholds_by_model": {
+    "logreg_tfidf": 0.60563,
+    "sgd_log_tfidf": 0.702392,
+    "linsvc_cal_tfidf": 0.424533,
+    "cnb_bow": 0.995318,
+    "voting_soft": 0.661507
+  },
+  "candidate_model_paths": {
+    "logreg_tfidf": "candidate_models/logreg_tfidf.joblib",
+    "sgd_log_tfidf": "candidate_models/sgd_log_tfidf.joblib",
+    "linsvc_cal_tfidf": "candidate_models/linsvc_cal_tfidf.joblib",
+    "cnb_bow": "candidate_models/cnb_bow.joblib",
+    "voting_soft": "candidate_models/voting_soft.joblib"
+  },
+  "target_recall": 0.9,
+  "seed": 42,
+  "val_size": 0.15,
+  "test_size": 0.15,
+  "candidate_models": [
+    "logreg_tfidf",
+    "sgd_log_tfidf",
+    "linsvc_cal_tfidf",
+    "cnb_bow",
+    "voting_soft"
+  ],
+  "disable_voting": false,
+  "c_grid": [
+    0.5,
+    1.0
+  ],
+  "plot_confusion_matrix": true
+}

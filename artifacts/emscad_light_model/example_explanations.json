@@ -1,0 +1,102 @@
+[
+  {
+    "kind": "fraud",
+    "title": "Director of Strategy",
+    "actual_label": 1,
+    "fraud_probability": 0.8196295887859589,
+    "prediction": 1,
+    "threshold": 0.424533,
+    "lime_explanation": [
+      {
+        "token": "your",
+        "weight": 0.133298959501425
+      },
+      {
+        "token": "professional",
+        "weight": 0.12038228404991155
+      },
+      {
+        "token": "Aptitude",
+        "weight": 0.11520105609145656
+      },
+      {
+        "token": "Staffing",
+        "weight": 0.10571618599623715
+      },
+      {
+        "token": "fiit",
+        "weight": 0.10388923615028481
+      },
+      {
+        "token": "recruitng",
+        "weight": 0.10075431747683483
+      },
+      {
+        "token": "makeing",
+        "weight": 0.09824924119954291
+      },
+      {
+        "token": "geographical",
+        "weight": 0.09571882700225069
+      },
+      {
+        "token": "leveraging",
+        "weight": 0.07692453445945305
+      },
+      {
+        "token": "will",
+        "weight": -0.008093579699228984
+      }
+    ]
+  },
+  {
+    "kind": "legitimate",
+    "title": "Elementary School Teacher",
+    "actual_label": 0,
+    "fraud_probability": 0.02615071188997319,
+    "prediction": 0,
+    "threshold": 0.424533,
+    "lime_explanation": [
+      {
+        "token": "Bachelor",
+        "weight": -0.016410008640663276
+      },
+      {
+        "token": "of",
+        "weight": -0.01237453556799576
+      },
+      {
+        "token": "university",
+        "weight": -0.010306218632764921
+      },
+      {
+        "token": "American",
+        "weight": 0.009115251077549695
+      },
+      {
+        "token": "methods",
+        "weight": -0.008937510329662298
+      },
+      {
+        "token": "represented",
+        "weight": 0.008642294632410919
+      },
+      {
+        "token": "Multiple",
+        "weight": -0.007102243803914445
+      },
+      {
+        "token": "school",
+        "weight": 0.006538779339009039
+      },
+      {
+        "token": "materials",
+        "weight": -0.006372710733295614
+      },
+      {
+        "token": "ten",
+        "weight": 0.00511013366940495
+      }
+    ]
+  }
+]
